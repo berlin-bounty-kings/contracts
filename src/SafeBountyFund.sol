@@ -159,6 +159,9 @@ contract SafeBountyFund is AccessControl, Groth16Verifier {
             0
         ];
 
+        // emit event that we fetched bounty id and what it is
+        emit SBFEvents.BountyIdDerived(bountyId);
+
         // Make sure that bounty exists
         if (bountyInfoOf[bountyId].amount == 0)
             revert SBFErrors.BOUNTY_DOES_NOT_EXIST();
@@ -197,7 +200,7 @@ contract SafeBountyFund is AccessControl, Groth16Verifier {
 
     function getSignerFromPublicSignals(
         uint256[38] memory _pubSignals
-    ) external pure returns (uint256[2] memory) {
+    ) public pure returns (uint256[2] memory) {
         uint256[2] memory signer;
         signer[0] = _pubSignals[13];
         signer[1] = _pubSignals[14];
