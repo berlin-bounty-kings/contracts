@@ -39,7 +39,7 @@ contract SBFModule is AccessControl {
     IERC20 token;
 
     /// @dev id to bounty payout
-    mapping(uint8 bountyId => uint256 payout) public payoutOf;
+    mapping(string bountyId => SBFDataTypes.Bounty bounty) public bountyInfoOf;
 
     /// @dev Sponsor role
     bytes32 public constant SPONSOR_ROLE = keccak256("SPONSOR_ROLE");
@@ -50,9 +50,20 @@ contract SBFModule is AccessControl {
     // / /___/ /_/ / / / (__  ) /_/ /  / /_/ / /__/ /_/ /_/ / /
     // \____/\____/_/ /_/____/\__/_/   \__,_/\___/\__/\____/_/
 
+    /**
+     * @notice 
+     *  Constructor for SBF safe module
+     *
+     * @param _tokenAddress address of token used for bounty payouts
+     *
+     */
     constructor(address _tokenAddress) {
         // Make sure that token address is valid
         if (!_isContract(_tokenAddress)) revert SBFErrors.ADDRESS_NOT_CONTRACT();
+
+        // create instance
+        token = IERC20(_tokenAddress);
+
     }
 
     //      ______     __                        __   ______                 __  _
@@ -61,16 +72,57 @@ contract SBFModule is AccessControl {
     //   / /____>  </ /_/  __/ /  / / / / /_/ / /  / __/ / /_/ / / / / /__/ /_/ / /_/ / / / (__  )
     //  /_____/_/|_|\__/\___/_/  /_/ /_/\__,_/_/  /_/    \__,_/_/ /_/\___/\__/_/\____/_/ /_/____/
 
-
+    /**
+     * @notice
+     *  Setter function to set the address of the safe
+     *  Only callabele by the default admin
+     *
+     * @param _safeAddress address of safe
+     *
+     */
     function setSafe(address _safeAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        // Make sure that safe address is contract
         if (!_isContract(_safeAddress)) revert SBFErrors.ADDRESS_NOT_CONTRACT();
 
+        // Create safe instance
         safe = ISafe(_safeAddress);
     }
 
-    function depositBounty() external onlyRole(SPONSOR_ROLE) {}
 
-    function submitProof() external onlyRole(SPONSOR_ROLE) {}
+    /**
+     * @notice 
+     *  Function that allows sponsors to deposit funds into the smart contract
+     *
+     * @param _bountyId id for specific bounty
+     * @param _amount amount to send in
+     *
+     */
+    function depositBounty(string memory _bountyId, uint256 _amount) external onlyRole(SPONSOR_ROLE) {
+        // Fetch balance before 
+        uint256 balanceBefore = token.balanceOf(address(safe));
+
+        // Do the transaction into the safe
+        token.safeTransferFrom(msg.sender, address(safe), _amount);
+
+        // Fetch balance after
+        uint256 balanceAfter = token.balanceOf(address(safe));
+
+        // Calculate the realized amount recieved
+        uint256 realizedAmount = balanceAfter - balanceBefore;
+
+        // create the bounty entry
+        bountyInfoOf[_bountyId] = SBFDataTypes.Bounty(
+            SBFDataTypes.BountyIs.UNPAYED,
+            msg.sender,
+            realizedAmount
+        );
+
+        // Emit an event that the bounty has been deposited
+        emit SBFEvents.BountyDeposition(
+            _bountyId,
+            bountyInfoOf[_bountyId]
+        );
+    }
 
     function claimBounty() external {}
 
@@ -78,7 +130,7 @@ contract SBFModule is AccessControl {
      * @notice
      *  Allows contract to check if the Token address actually is a contract
      *
-     * @param _address address we want to  check
+     * @param _address address we want to check
      *
      * @return _isAddressContract returns true if token is a contract, otherwise returns false
      *

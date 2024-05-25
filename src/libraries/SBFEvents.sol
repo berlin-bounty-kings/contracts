@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
+/* SBF Libraries */
+import {SBFDataTypes} from "src/libraries/SBFDataTypes.sol";
+
 /**
  * @title SBFErrors
  * @author SBF Hacker Team
@@ -8,5 +11,9 @@ pragma solidity 0.8.19;
  *
  */
 library SBFEvents {
-
+    /// @dev event emitted when a bounty is deposited
+    event BountyDeposition(
+        string bountyId,
+        SBFDataTypes.Bounty bountyInfo
+    );
 }
