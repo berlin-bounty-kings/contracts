@@ -12,8 +12,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SBFDataTypes} from "src/libraries/SBFDataTypes.sol";
 import {SBFErrors} from "src/libraries/SBFErrors.sol";
 import {SBFEvents} from "src/libraries/SBFEvents.sol";
-
-import {Groth16Verifier} from "src/Groth16Verifier.sol";
+import {Groth16Verifier} from "src/libraries/Groth16Verifier.sol";
 
 /**
  * @title Safe Bounty Fund
@@ -214,7 +213,7 @@ contract SBFModule is AccessControl, Groth16Verifier {
     // Numbers of events is arbitary but for this example we are using 10 (including test eventID)
     function getValidEventIdFromPublicSignals(
         uint256[38] memory _pubSignals
-    ) public view returns (uint256[] memory) {
+    ) public pure returns (uint256[] memory) {
         // Events are stored from starting index 15 to till valid event ids length
         uint256[] memory eventIds = new uint256[](1);
         for (uint256 i = 0; i < 1; i++) {

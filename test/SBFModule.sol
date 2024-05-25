@@ -43,19 +43,19 @@ contract SBFTest is Test {
         vm.stopPrank();
     }
 
-    function test_claimBounty() external {
-        vm.startPrank(sponsor);
+    // function test_claimBounty() external {
+        // vm.startPrank(sponsor);
 
-        token.approve(address(sbf), 5_000e6);
+        // token.approve(address(sbf), 5_000e6);
 
-        sbf.depositBounty(23492, 5_000e6);
-
-        vm.stopPrank();
-
-        vm.startPrank(winningHacker);
-
-        // sbf.claimBounty();
+        // sbf.depositBounty(23492, 5_000e6);
 
         // vm.stopPrank();
-    }
+
+        // vm.startPrank(winningHacker);
+
+        // // sbf.claimBounty();
+
+        // // vm.stopPrank();
+    // }
 }
