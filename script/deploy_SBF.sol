@@ -19,8 +19,8 @@ contract DeploySBF is Script {
 
         sbfModule = new SBFModule(token);
 
-        //sbfModule.grantRole(0x00, sponsorAddress);
-        //sbfModule.grantRole(keccak256("SPONSOR_ROLE"), sponsorAddress);
+        sbfModule.grantRole(0x00, sponsorAddress);
+        sbfModule.grantRole(keccak256("SPONSOR_ROLE"), sponsorAddress);
 
         vm.stopBroadcast();
     }
