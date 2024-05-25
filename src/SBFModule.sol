@@ -11,6 +11,11 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 /* OpenZeppelin Interfaces */
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+/* SBF Libraries */
+import {SBFDataTypes} from "src/libraries/SBFDataTypes.sol";
+import {SBFErrors} from "src/libraries/SBFErrors.sol";
+import {SBFEvents} from "src/libraries/SBFEvents.sol";
+
 /**
  * @title Safe Bounty Fund
  * @author SBF Hackathon team
@@ -45,6 +50,8 @@ contract SBFModule is AccessControl {
     }
 
     function depositBounty() external onlyRole(SPONSOR_ROLE) {}
+
+    function submitProof() external onlyRole(SPONSOR_ROLE) {}
 
     function claimBounty() external {}
 }
