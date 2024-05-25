@@ -13,13 +13,15 @@ import {SBFDataTypes} from "src/libraries/SBFDataTypes.sol";
 import {SBFErrors} from "src/libraries/SBFErrors.sol";
 import {SBFEvents} from "src/libraries/SBFEvents.sol";
 
+import {Groth16Verifier} from "src/Groth16Verifier.sol";
+
 /**
  * @title Safe Bounty Fund
  * @author SBF Hackathon team
  * @notice  Gnosis module for depositing and claiming rewards
  *
  */
-contract SBFModule is AccessControl {
+contract SBFModule is AccessControl, Groth16Verifier {
     // Using SafeERC20 for safer token transactions
     using SafeERC20 for IERC20;
 
@@ -29,6 +31,25 @@ contract SBFModule is AccessControl {
     //   ___/ / /_/ /_/ / /_/  __(__  )
     //  /____/\__/\__,_/\__/\___/____/
 
+    // This us the ETHBerlin event UUID converted to bigint
+    uint256[1] VALID_EVENT_IDS = [111560146890584288369567824893314450802];
+
+    // Assumption that there is only one event ID for each category and only 1 winner.
+    uint256[1] SOCIAL_WINNER_EVENT_ID = [
+        120712479341476572660709084948370727286
+    ];
+
+    // Hacker winner event id
+    uint256[1] HACKER_WINNER_EVENT_ID = [
+        213102656137810142630059403125621749981
+    ];
+
+    // This is hex to bigint conversion for ETHBerlin signer
+    uint256[2] ETHBERLIN_SIGNER = [
+        13908133709081944902758389525983124100292637002438232157513257158004852609027,
+        7654374482676219729919246464135900991450848628968334062174564799457623790084
+    ];
+
     /// @dev Token instance
     IERC20 token;
 
@@ -37,6 +58,52 @@ contract SBFModule is AccessControl {
 
     /// @dev Sponsor role
     bytes32 public constant SPONSOR_ROLE = keccak256("SPONSOR_ROLE");
+
+    /// MODIFIERS
+
+    modifier verifiedProof(SBFDataTypes.ProofArgs calldata proof) {
+        require(
+            this.verifyProof(
+                proof._pA,
+                proof._pB,
+                proof._pC,
+                proof._pubSignals
+            ),
+        "Invalid proof"
+        );
+        _;
+    }
+
+    modifier validEventIds(uint256[38] memory _pubSignals) {
+        uint256[] memory eventIds = getValidEventIdFromPublicSignals(
+            _pubSignals
+        );
+        require(
+            keccak256(abi.encodePacked(eventIds)) ==
+                keccak256(abi.encodePacked(VALID_EVENT_IDS)),
+            "Invalid event ids"
+        );
+        _;
+    }
+
+    modifier validSigner(uint256[38] memory _pubSignals) {
+        uint256[2] memory signer = getSignerFromPublicSignals(_pubSignals);
+        require(
+            signer[0] == ETHBERLIN_SIGNER[0] &&
+            signer[1] == ETHBERLIN_SIGNER[1],
+            "Invalid signer"
+        );
+        _;
+    }
+
+    modifier validWaterMark(uint256[38] memory _pubSignals) {
+        require(
+            getWaterMarkFromPublicSignals(_pubSignals) ==
+                uint256(uint160(msg.sender)),
+            "Invalid watermark"
+        );
+        _;
+    }
 
     //    ______                 __                  __
     //   / ____/___  ____  _____/ /________  _______/ /_____  _____
@@ -111,28 +178,57 @@ contract SBFModule is AccessControl {
      * @notice
      *  function for a winning hackathon participant to claim their reward
      *
-     * @param _bountyId id of the bounty that the hacker won
      *
      */
-    function claimBounty(string memory _bountyId) external {
-        // Make sure that bounty exists
-        if (bountyInfoOf[_bountyId].amount == 0) revert SBFErrors.BOUNTY_DOES_NOT_EXIST();
+    //function claimBounty(string memory _bountyId) external {
+//    function claimBounty(SBFDataTypes.ProofArgs calldata proof) external {
 
-        // Make sure that the bounty is still unpayed
-        if (bountyInfoOf[_bountyId].bountyIs == SBFDataTypes.BountyIs.PAYED) revert SBFErrors.BOUNTY_ALREADY_PAYED_OUT();
+        // // Make sure that bounty exists
+        // if (bountyInfoOf[_bountyId].amount == 0) revert SBFErrors.BOUNTY_DOES_NOT_EXIST();
 
-        // Pay out bounty
-        token.safeTransfer(msg.sender, bountyInfoOf[_bountyId].amount);
+        // // Make sure that the bounty is still unpayed
+        // if (bountyInfoOf[_bountyId].bountyIs == SBFDataTypes.BountyIs.PAYED) revert SBFErrors.BOUNTY_ALREADY_PAYED_OUT();
 
-        // Emit event that the bounty has been claimed
-        emit SBFEvents.BountyPayed(
-            msg.sender,
-            bountyInfoOf[_bountyId]
-        );
+        // // Pay out bounty
+        // token.safeTransfer(msg.sender, bountyInfoOf[_bountyId].amount);
 
-        // Set the bountyIs status to PAYED
-        bountyInfoOf[_bountyId].bountyIs = SBFDataTypes.BountyIs.PAYED;
+        // // Emit event that the bounty has been claimed
+        // emit SBFEvents.BountyPayed(
+            // msg.sender,
+            // bountyInfoOf[_bountyId]
+        // );
+
+        // // Set the bountyIs status to PAYED
+        // bountyInfoOf[_bountyId].bountyIs = SBFDataTypes.BountyIs.PAYED;
     }
+
+    // Numbers of events is arbitary but for this example we are using 10 (including test eventID)
+    function getValidEventIdFromPublicSignals(
+        uint256[38] memory _pubSignals
+    ) public view returns (uint256[] memory) {
+        // Events are stored from starting index 15 to till valid event ids length
+        uint256[] memory eventIds = new uint256[](VALID_EVENT_IDS.length);
+        for (uint256 i = 0; i < VALID_EVENT_IDS.length; i++) {
+            eventIds[i] = _pubSignals[15 + i];
+        }
+        return eventIds;
+    }
+
+    function getWaterMarkFromPublicSignals(
+		uint256[38] memory _pubSignals
+	) public pure returns (uint256) {
+		return _pubSignals[37];
+	}
+
+
+	function getSignerFromPublicSignals(
+		uint256[38] memory _pubSignals
+	) public pure returns (uint256[2] memory) {
+		uint256[2] memory signer;
+		signer[0] = _pubSignals[13];
+		signer[1] = _pubSignals[14];
+		return signer;
+	}
 
     /**
      * @notice

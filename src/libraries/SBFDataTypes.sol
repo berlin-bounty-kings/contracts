@@ -29,4 +29,16 @@ library SBFDataTypes {
         address sponsor;
         uint256 amount;
     }
+
+    /**
+     * @notice 
+     *  Zupass proof args
+     *
+     */
+    struct ProofArgs {
+        uint256[2] _pA;
+        uint256[2][2] _pB;
+        uint256[2] _pC;
+        uint256[38] _pubSignals;
+    }
 }
