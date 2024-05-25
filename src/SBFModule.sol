@@ -128,9 +128,30 @@ contract SBFModule is AccessControl {
     }
 
     /**
+     * @notice
+     *  function for a winning hackathon participant to claim their reward
+     *
+     * @param _bountyId id of the bounty that the hacker won
+     *
      */
     function claimBounty(string memory _bountyId) external {
-        
+        // Make sure that bounty exists
+        if (bountyInfoOf[_bountyId].amount == 0) revert SBFErrors.BOUNTY_DOES_NOT_EXIST();
+
+        // Make sure that the bounty is still unpayed
+        if (bountyInfoOf[_bountyId].bountyIs == SBFDataTypes.BountyIs.PAYED) revert SBFErrors.BOUNTY_ALREADY_PAYED_OUT();
+
+        // Pay out bounty
+        token.safeTransferFrom(address(safe), msg.sender, bountyInfoOf[_bountyId].amount);
+
+        // Emit event that the bounty has been claimed
+        emit SBFEvents.BountyPayed(
+            msg.sender,
+            bountyInfoOf[_bountyId]
+        );
+
+        // Set the bountyIs status to PAYED
+        bountyInfoOf[_bountyId].bountyIs = SBFDataTypes.BountyIs.PAYED;
     }
 
     /**
