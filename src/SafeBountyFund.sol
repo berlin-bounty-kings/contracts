@@ -178,26 +178,54 @@ contract SafeBountyFund is AccessControl, Groth16Verifier {
     //  / ____/ /_/ / /  /  __/  / __/ / /_/ / / / / /__/ /_/ / /_/ / / / (__  )
     // /_/    \__,_/_/   \___/  /_/    \__,_/_/ /_/\___/\__/_/\____/_/ /_/____/
 
-    // Numbers of events is arbitary but for this example we are using 10 (including test eventID)
-    function getValidEventIdFromPublicSignals(
-        uint256[38] memory _pubSignals
-    ) public pure returns (uint256[] memory) {
-        // Events are stored from starting index 15 to till valid event ids length
-        uint256[] memory eventIds = new uint256[](1);
-        for (uint256 i = 0; i < 1; i++) {
-            eventIds[i] = _pubSignals[15 + i];
-        }
-        return eventIds;
-    }
+/**
+ * @notice 
+ *  Extracts valid event IDs from the given public signals.
+ *
+ * @param _pubSignals The array of public signals containing event IDs.
+ *
+ * @return _eventIds An array containing the extracted event IDs.
+ *
+ */
+function getValidEventIdFromPublicSignals(
+    uint256[38] memory _pubSignals
+) public pure returns (uint256[] memory _eventIds) {
+    // Initialize an array to store event IDs, currently set to hold 1 event ID.
+    uint256[] memory eventIds = new uint256[](1);
 
-    function getSignerFromPublicSignals(
-        uint256[38] memory _pubSignals
-    ) public pure returns (uint256[2] memory) {
-        uint256[2] memory signer;
-        signer[0] = _pubSignals[13];
-        signer[1] = _pubSignals[14];
-        return signer;
+    // Loop to extract event IDs starting from index 15.
+    for (uint256 i = 0; i < 1; i++) {
+        // Assign the event ID from the public signals to the eventIds array.
+        eventIds[i] = _pubSignals[15 + i];
     }
+    // Assign the eventIds array to the return variable.
+    _eventIds = eventIds;
+}
+
+/**
+ * @notice 
+ *  Extracts the signer's information from the given public signals.
+ *
+ * @param _pubSignals The array of public signals containing the signer's information.
+ *
+ * @return _signer A two-element array containing the signer's information.
+ *
+ */
+function getSignerFromPublicSignals(
+    uint256[38] memory _pubSignals
+) public pure returns (uint256[2] memory _signer) {
+    // Initialize an array to store the signer's information.
+    uint256[2] memory signer;
+
+    // Assign the signer's first part of the information from index 13.
+    signer[0] = _pubSignals[13];
+
+    // Assign the signer's second part of the information from index 14.
+    signer[1] = _pubSignals[14];
+
+    // Assign the signer array to the return variable.
+    _signer = signer;
+}
 
     //     ____      __                        __   ______                 __  _
     //    /  _/___  / /____  _________  ____ _/ /  / ____/_  ______  _____/ /_(_)___  ____  _____
