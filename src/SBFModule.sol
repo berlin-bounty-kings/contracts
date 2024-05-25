@@ -130,7 +130,7 @@ contract SBFModule is AccessControl {
     /**
      */
     function claimBounty(string memory _bountyId) external {
-
+        
     }
 
     /**
