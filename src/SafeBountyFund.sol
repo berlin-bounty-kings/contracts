@@ -20,7 +20,7 @@ import {Groth16Verifier} from "src/libraries/Groth16Verifier.sol";
  * @notice  Gnosis module for depositing and claiming rewards
  *
  */
-contract SBFModule is AccessControl, Groth16Verifier {
+contract SafeBountyFund is AccessControl, Groth16Verifier {
     // Using SafeERC20 for safer token transactions
     using SafeERC20 for IERC20;
 
@@ -29,16 +29,6 @@ contract SBFModule is AccessControl, Groth16Verifier {
     //    \__ \/ __/ __ `/ __/ _ \/ ___/
     //   ___/ / /_/ /_/ / /_/  __(__  )
     //  /____/\__/\__,_/\__/\___/____/
-
-    // // Assumption that there is only one event ID for each category and only 1 winner.
-    // uint256[1] SOCIAL_WINNER_EVENT_ID = [
-    //     120712479341476572660709084948370727286
-    // ];
-
-    // // Hacker winner event id
-    // uint256[1] HACKER_WINNER_EVENT_ID = [
-    //     213102656137810142630059403125621749981
-    // ];
 
     // This is hex to bigint conversion for ETHBerlin signer
     uint256[2] ETHBERLIN_SIGNER = [
@@ -69,18 +59,6 @@ contract SBFModule is AccessControl, Groth16Verifier {
         );
         _;
     }
-
-    // modifier validEventIds(uint256[38] memory _pubSignals, uint256 _claimEventId) {
-    //     uint256[] memory eventId = getValidEventIdFromPublicSignals(
-    //         _pubSignals
-    //     );
-    //     require(
-    //         keccak256(abi.encodePacked(eventId)) ==
-    //             keccak256(abi.encodePacked(VALID_EVENT_IDS)),
-    //         "Invalid event ids"
-    //     );
-    //     _;
-    // }
 
     modifier validSigner(uint256[38] memory _pubSignals) {
         uint256[2] memory signer = getSignerFromPublicSignals(_pubSignals);
@@ -175,19 +153,17 @@ contract SBFModule is AccessControl, Groth16Verifier {
      * @notice
      *  function for a winning hackathon participant to claim their reward
      *
+     * @param proof the proof that needs to be verified
      *
      */
-    //function claimBounty(string memory _bountyId) external {
     function claimBounty(
         SBFDataTypes.ProofArgs calldata proof
     )
         external
         verifiedProof(proof)
-        // validEventIds(proof._pubSignals)
         validSigner(proof._pubSignals)
     {
-        // string bountyId = "ETHBerlin2021";
-
+        // derive bounty id
         uint256 bountyId = getValidEventIdFromPublicSignals(proof._pubSignals)[
             0
         ];
