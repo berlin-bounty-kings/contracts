@@ -46,6 +46,8 @@ contract SBFModule is AccessControl {
 
 
     function setSafe(address _safeAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (!_isContract(_safeAddress)) revert SBFErrors.ADDRESS_NOT_CONTRACT();
+
         safe = ISafe(_safeAddress);
     }
 
@@ -54,4 +56,23 @@ contract SBFModule is AccessControl {
     function submitProof() external onlyRole(SPONSOR_ROLE) {}
 
     function claimBounty() external {}
+
+    /**
+     * @notice
+     *  Allows contract to check if the Token address actually is a contract
+     *
+     * @param _address address we want to  check
+     *
+     * @return _isAddressContract returns true if token is a contract, otherwise returns false
+     *
+     */
+    function _isContract(address _address) internal view returns (bool _isAddressContract) {
+        uint256 size;
+
+        assembly {
+            size := extcodesize(_address)
+        }
+
+        _isAddressContract = size > 0;
+    }
 }
