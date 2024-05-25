@@ -47,28 +47,28 @@ contract SafeBountyFund is AccessControl, Groth16Verifier {
 
     /// MODIFIERS
 
-    modifier verifiedProof(SBFDataTypes.ProofArgs calldata proof) {
-        require(
-            this.verifyProof(
-                proof._pA,
-                proof._pB,
-                proof._pC,
-                proof._pubSignals
-            ),
-            "Invalid proof"
-        );
-        _;
-    }
+    // modifier verifiedProof(SBFDataTypes.ProofArgs calldata proof) {
+        // require(
+            // this.verifyProof(
+                // proof._pA,
+                // proof._pB,
+                // proof._pC,
+                // proof._pubSignals
+            // ),
+            // "Invalid proof"
+        // );
+        // _;
+    // }
 
-    modifier validSigner(uint256[38] memory _pubSignals) {
-        uint256[2] memory signer = getSignerFromPublicSignals(_pubSignals);
-        require(
-            signer[0] == ETHBERLIN_SIGNER[0] &&
-                signer[1] == ETHBERLIN_SIGNER[1],
-            "Invalid signer"
-        );
-        _;
-    }
+    // modifier validSigner(uint256[38] memory _pubSignals) {
+        // uint256[2] memory signer = getSignerFromPublicSignals(_pubSignals);
+        // require(
+            // signer[0] == ETHBERLIN_SIGNER[0] &&
+                // signer[1] == ETHBERLIN_SIGNER[1],
+            // "Invalid signer"
+        // );
+        // _;
+    // }
 
     //    ______                 __                  __
     //   / ____/___  ____  _____/ /________  _______/ /_____  _____
@@ -151,13 +151,30 @@ contract SafeBountyFund is AccessControl, Groth16Verifier {
         SBFDataTypes.ProofArgs calldata proof
     )
         external
-        verifiedProof(proof)
-        validSigner(proof._pubSignals)
+        // verifiedProof(proof)
+        // validSigner(proof._pubSignals)
     {
         // derive bounty id
         uint256 bountyId = getValidEventIdFromPublicSignals(proof._pubSignals)[
             0
         ];
+
+        // Make sure that proof is valid
+        if (!this.verifyProof(
+                proof._pA,
+                proof._pB,
+                proof._pC,
+                proof._pubSignals
+        )) revert SBFErrors.INVALID_PROOF();
+
+        // Derive signer from proof
+        uint256[2] memory signer = getSignerFromPublicSignals(proof._pubSignals);
+
+        // Make sure signer is valid
+        if (
+            signer[0] != ETHBERLIN_SIGNER[0] ||
+            signer[1] != ETHBERLIN_SIGNER[1]
+        ) revert SBFErrors.INVALID_SIGNER();
 
         // Make sure that bounty exists
         if (bountyInfoOf[bountyId].amount == 0)
@@ -175,6 +192,9 @@ contract SafeBountyFund is AccessControl, Groth16Verifier {
 
         // Set the bountyIs status to PAYED
         bountyInfoOf[bountyId].bountyIs = SBFDataTypes.BountyIs.PAYED;
+
+        // Null out the bounty amount (this is only for demo purposes since we have 2 test winner badges)
+        bountyInfoOf[bountyId].amount = 0;
     }
 
     //     ____                     ______                 __  _

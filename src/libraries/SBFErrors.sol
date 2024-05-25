@@ -19,4 +19,10 @@ library SBFErrors {
 
     /// @dev throw error if bounty is already payed out
     error BOUNTY_ALREADY_PAYED_OUT();
+
+    /// @dev throw error when proof is invalid
+    error INVALID_PROOF();
+
+    /// @dev throw error when signer is i8nvalid
+    error INVALID_SIGNER();
 }
