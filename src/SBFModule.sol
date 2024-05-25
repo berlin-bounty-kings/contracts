@@ -43,4 +43,8 @@ contract SBFModule is AccessControl {
     function setSafe(address _safeAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
         safe = ISafe(_safeAddress);
     }
+
+    function depositBounty() external onlyRole(SPONSOR_ROLE) {}
+
+    function claimBounty() external {}
 }
