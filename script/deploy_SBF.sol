@@ -14,7 +14,6 @@ contract DeploySBF is Script {
     address safeAddress = vm.envAddress("SAFE_ADDRESS");
     uint256 deployerKey = vm.envUint("DEPLOYER_KEY");
 
-
     ISafe safe = ISafe(safeAddress);
 
     SBFModule sbfModule;
