@@ -77,7 +77,8 @@ contract SBFModule is AccessControl {
      * @param _amount amount to send in
      *
      */
-    function depositBounty(string memory _bountyId, uint256 _amount) external onlyRole(SPONSOR_ROLE) {
+    //function depositBounty(string memory _bountyId, uint256 _amount) external onlyRole(SPONSOR_ROLE) {
+    function depositBounty(string memory _bountyId, uint256 _amount) external {
         // Make sure that the bounty does not exist already
         if (bountyInfoOf[_bountyId].amount != 0) revert SBFErrors.BOUNTY_ALREADY_EXISTS();
 
