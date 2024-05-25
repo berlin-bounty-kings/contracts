@@ -181,25 +181,28 @@ contract SBFModule is AccessControl, Groth16Verifier {
      *
      */
     //function claimBounty(string memory _bountyId) external {
-//    function claimBounty(SBFDataTypes.ProofArgs calldata proof) external {
+    function claimBounty(SBFDataTypes.ProofArgs calldata proof) external
+        verifiedProof(proof)
+		validEventIds(proof._pubSignals)
+		validSigner(proof._pubSignals) {
 
-        // // Make sure that bounty exists
-        // if (bountyInfoOf[_bountyId].amount == 0) revert SBFErrors.BOUNTY_DOES_NOT_EXIST();
+        // Make sure that bounty exists
+        if (bountyInfoOf[_bountyId].amount == 0) revert SBFErrors.BOUNTY_DOES_NOT_EXIST();
 
-        // // Make sure that the bounty is still unpayed
-        // if (bountyInfoOf[_bountyId].bountyIs == SBFDataTypes.BountyIs.PAYED) revert SBFErrors.BOUNTY_ALREADY_PAYED_OUT();
+        // Make sure that the bounty is still unpayed
+        if (bountyInfoOf[_bountyId].bountyIs == SBFDataTypes.BountyIs.PAYED) revert SBFErrors.BOUNTY_ALREADY_PAYED_OUT();
 
-        // // Pay out bounty
-        // token.safeTransfer(msg.sender, bountyInfoOf[_bountyId].amount);
+        // Pay out bounty
+        token.safeTransfer(msg.sender, bountyInfoOf[_bountyId].amount);
 
-        // // Emit event that the bounty has been claimed
-        // emit SBFEvents.BountyPayed(
-            // msg.sender,
-            // bountyInfoOf[_bountyId]
-        // );
+        // Emit event that the bounty has been claimed
+        emit SBFEvents.BountyPayed(
+            msg.sender,
+            bountyInfoOf[_bountyId]
+        );
 
-        // // Set the bountyIs status to PAYED
-        // bountyInfoOf[_bountyId].bountyIs = SBFDataTypes.BountyIs.PAYED;
+        // Set the bountyIs status to PAYED
+        bountyInfoOf[_bountyId].bountyIs = SBFDataTypes.BountyIs.PAYED;
     }
 
     // Numbers of events is arbitary but for this example we are using 10 (including test eventID)
