@@ -35,8 +35,25 @@ contract SBFModule is AccessControl {
     /// @dev Safe instance
     ISafe safe;
 
+    /// @dev Token instance
+    IERC20 token;
+
+    /// @dev id to bounty payout
+    mapping(uint8 bountyId => uint256 payout) public payoutOf;
+
     /// @dev Sponsor role
     bytes32 public constant SPONSOR_ROLE = keccak256("SPONSOR_ROLE");
+
+    //    ______                 __                  __
+    //   / ____/___  ____  _____/ /________  _______/ /_____  _____
+    //  / /   / __ \/ __ \/ ___/ __/ ___/ / / / ___/ __/ __ \/ ___/
+    // / /___/ /_/ / / / (__  ) /_/ /  / /_/ / /__/ /_/ /_/ / /
+    // \____/\____/_/ /_/____/\__/_/   \__,_/\___/\__/\____/_/
+
+    constructor(address _tokenAddress) {
+        // Make sure that token address is valid
+        if (!_isContract(_tokenAddress)) revert SBFErrors.ADDRESS_NOT_CONTRACT();
+    }
 
     //      ______     __                        __   ______                 __  _
     //     / ____/  __/ /____  _________  ____ _/ /  / ____/_  ______  _____/ /_(_)___  ____  _____
