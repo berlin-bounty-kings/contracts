@@ -8,6 +8,9 @@ pragma solidity 0.8.19;
  *
  */
 library SBFErrors {
-    /// @dev Error if gnosis safe address is not a contract
+    /// @dev throw error if gnosis safe address is not a contract
     error ADDRESS_NOT_CONTRACT();
+
+    /// @dev throw error if bounty already exists
+    error BOUNTY_ALREADY_EXISTS();
 }

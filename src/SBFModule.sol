@@ -98,6 +98,9 @@ contract SBFModule is AccessControl {
      *
      */
     function depositBounty(string memory _bountyId, uint256 _amount) external onlyRole(SPONSOR_ROLE) {
+        // Make sure that the bounty does not exist already
+        if (bountyInfoOf[_bountyId].amount != 0) revert SBFErrors.BOUNTY_ALREADY_EXISTS();
+
         // Fetch balance before 
         uint256 balanceBefore = token.balanceOf(address(safe));
 
@@ -124,7 +127,11 @@ contract SBFModule is AccessControl {
         );
     }
 
-    function claimBounty() external {}
+    /**
+     */
+    function claimBounty(string memory _bountyId) external {
+
+    }
 
     /**
      * @notice
