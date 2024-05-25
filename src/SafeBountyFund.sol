@@ -17,7 +17,7 @@ import {Groth16Verifier} from "src/libraries/Groth16Verifier.sol";
 /**
  * @title Safe Bounty Fund
  * @author SBF Hackathon team
- * @notice  Gnosis module for depositing and claiming rewards
+ * @notice  Contract for depositing and claiming rewards and verifying proofs
  *
  */
 contract SafeBountyFund is AccessControl, Groth16Verifier {
