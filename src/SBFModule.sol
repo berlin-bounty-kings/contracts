@@ -64,6 +64,9 @@ contract SBFModule is AccessControl {
         // create instance
         token = IERC20(_tokenAddress);
 
+        // Grant deployer default admin role
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+
     }
 
     //      ______     __                        __   ______                 __  _
@@ -102,13 +105,13 @@ contract SBFModule is AccessControl {
         if (bountyInfoOf[_bountyId].amount != 0) revert SBFErrors.BOUNTY_ALREADY_EXISTS();
 
         // Fetch balance before 
-        uint256 balanceBefore = token.balanceOf(address(safe));
+        uint256 balanceBefore = token.balanceOf(address(this));
 
         // Do the transaction into the safe
-        token.safeTransferFrom(msg.sender, address(safe), _amount);
+        token.safeTransferFrom(msg.sender, address(this), _amount);
 
         // Fetch balance after
-        uint256 balanceAfter = token.balanceOf(address(safe));
+        uint256 balanceAfter = token.balanceOf(address(this));
 
         // Calculate the realized amount recieved
         uint256 realizedAmount = balanceAfter - balanceBefore;
@@ -142,7 +145,7 @@ contract SBFModule is AccessControl {
         if (bountyInfoOf[_bountyId].bountyIs == SBFDataTypes.BountyIs.PAYED) revert SBFErrors.BOUNTY_ALREADY_PAYED_OUT();
 
         // Pay out bounty
-        token.safeTransferFrom(address(safe), msg.sender, bountyInfoOf[_bountyId].amount);
+        token.safeTransferFrom(address(this), msg.sender, bountyInfoOf[_bountyId].amount);
 
         // Emit event that the bounty has been claimed
         emit SBFEvents.BountyPayed(
