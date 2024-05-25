@@ -30,7 +30,7 @@ contract SafeBountyFund is AccessControl, Groth16Verifier {
     //   ___/ / /_/ /_/ / /_/  __(__  )
     //  /____/\__/\__,_/\__/\___/____/
 
-    // This is hex to bigint conversion for ETHBerlin signer
+    /// @dev This is hex to bigint conversion for ETHBerlin signer
     uint256[2] ETHBERLIN_SIGNER = [
         13908133709081944902758389525983124100292637002438232157513257158004852609027,
         7654374482676219729919246464135900991450848628968334062174564799457623790084
@@ -70,14 +70,14 @@ contract SafeBountyFund is AccessControl, Groth16Verifier {
         _;
     }
 
-    modifier validWaterMark(uint256[38] memory _pubSignals) {
-        require(
-            getWaterMarkFromPublicSignals(_pubSignals) ==
-                uint256(uint160(msg.sender)),
-            "Invalid watermark"
-        );
-        _;
-    }
+    // modifier validWaterMark(uint256[38] memory _pubSignals) {
+        // require(
+            // getWaterMarkFromPublicSignals(_pubSignals) ==
+                // uint256(uint160(msg.sender)),
+            // "Invalid watermark"
+        // );
+        // _;
+    // }
 
     //    ______                 __                  __
     //   / ____/___  ____  _____/ /________  _______/ /_____  _____
@@ -186,6 +186,12 @@ contract SafeBountyFund is AccessControl, Groth16Verifier {
         bountyInfoOf[bountyId].bountyIs = SBFDataTypes.BountyIs.PAYED;
     }
 
+    //     ____                     ______                 __  _
+    //    / __ \__  __________     / ____/_  ______  _____/ /_(_)___  ____  _____
+    //   / /_/ / / / / ___/ _ \   / /_  / / / / __ \/ ___/ __/ / __ \/ __ \/ ___/
+    //  / ____/ /_/ / /  /  __/  / __/ / /_/ / / / / /__/ /_/ / /_/ / / / (__  )
+    // /_/    \__,_/_/   \___/  /_/    \__,_/_/ /_/\___/\__/_/\____/_/ /_/____/
+
     // Numbers of events is arbitary but for this example we are using 10 (including test eventID)
     function getValidEventIdFromPublicSignals(
         uint256[38] memory _pubSignals
@@ -198,20 +204,28 @@ contract SafeBountyFund is AccessControl, Groth16Verifier {
         return eventIds;
     }
 
-    function getWaterMarkFromPublicSignals(
-        uint256[38] memory _pubSignals
-    ) public pure returns (uint256) {
-        return _pubSignals[37];
-    }
+    // function getWaterMarkFromPublicSignals(
+        // uint256[38] memory _pubSignals
+    // ) external pure returns (uint256) {
+        // return _pubSignals[37];
+    // }
+
+
 
     function getSignerFromPublicSignals(
         uint256[38] memory _pubSignals
-    ) public pure returns (uint256[2] memory) {
+    ) external pure returns (uint256[2] memory) {
         uint256[2] memory signer;
         signer[0] = _pubSignals[13];
         signer[1] = _pubSignals[14];
         return signer;
     }
+
+    //     ____      __                        __   ______                 __  _
+    //    /  _/___  / /____  _________  ____ _/ /  / ____/_  ______  _____/ /_(_)___  ____  _____
+    //    / // __ \/ __/ _ \/ ___/ __ \/ __ `/ /  / /_  / / / / __ \/ ___/ __/ / __ \/ __ \/ ___/
+    //  _/ // / / / /_/  __/ /  / / / / /_/ / /  / __/ / /_/ / / / / /__/ /_/ / /_/ / / / (__  )
+    // /___/_/ /_/\__/\___/_/  /_/ /_/\__,_/_/  /_/    \__,_/_/ /_/\___/\__/_/\____/_/ /_/____/
 
     /**
      * @notice
