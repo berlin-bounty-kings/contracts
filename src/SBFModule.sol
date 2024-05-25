@@ -216,8 +216,8 @@ contract SBFModule is AccessControl, Groth16Verifier {
         uint256[38] memory _pubSignals
     ) public view returns (uint256[] memory) {
         // Events are stored from starting index 15 to till valid event ids length
-        uint256[] memory eventIds = new uint256[](VALID_EVENT_IDS.length);
-        for (uint256 i = 0; i < VALID_EVENT_IDS.length; i++) {
+        uint256[] memory eventIds = new uint256[](1);
+        for (uint256 i = 0; i < 1; i++) {
             eventIds[i] = _pubSignals[15 + i];
         }
         return eventIds;
