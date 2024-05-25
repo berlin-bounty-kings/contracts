@@ -12,14 +12,8 @@ import {SBFDataTypes} from "src/libraries/SBFDataTypes.sol";
  */
 library SBFEvents {
     /// @dev event emitted when a bounty is deposited
-    event BountyDeposition(
-        string bountyId,
-        SBFDataTypes.Bounty bountyInfo
-    );
+    event BountyDeposition(uint256 bountyId, SBFDataTypes.Bounty bountyInfo);
 
     /// @dev event emitted when a bounty has been payed out
-    event BountyPayed(
-        address claimer,
-        SBFDataTypes.Bounty bountyInfo
-    );
+    event BountyPayed(address claimer, SBFDataTypes.Bounty bountyInfo);
 }

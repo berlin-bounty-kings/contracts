@@ -31,18 +31,15 @@ contract SBFModule is AccessControl, Groth16Verifier {
     //   ___/ / /_/ /_/ / /_/  __(__  )
     //  /____/\__/\__,_/\__/\___/____/
 
-    // This us the ETHBerlin event UUID converted to bigint
-    uint256[1] VALID_EVENT_IDS = [111560146890584288369567824893314450802];
+    // // Assumption that there is only one event ID for each category and only 1 winner.
+    // uint256[1] SOCIAL_WINNER_EVENT_ID = [
+    //     120712479341476572660709084948370727286
+    // ];
 
-    // Assumption that there is only one event ID for each category and only 1 winner.
-    uint256[1] SOCIAL_WINNER_EVENT_ID = [
-        120712479341476572660709084948370727286
-    ];
-
-    // Hacker winner event id
-    uint256[1] HACKER_WINNER_EVENT_ID = [
-        213102656137810142630059403125621749981
-    ];
+    // // Hacker winner event id
+    // uint256[1] HACKER_WINNER_EVENT_ID = [
+    //     213102656137810142630059403125621749981
+    // ];
 
     // This is hex to bigint conversion for ETHBerlin signer
     uint256[2] ETHBERLIN_SIGNER = [
@@ -54,7 +51,7 @@ contract SBFModule is AccessControl, Groth16Verifier {
     IERC20 token;
 
     /// @dev id to bounty payout
-    mapping(string bountyId => SBFDataTypes.Bounty bounty) public bountyInfoOf;
+    mapping(uint256 bountyId => SBFDataTypes.Bounty bounty) public bountyInfoOf;
 
     /// @dev Sponsor role
     bytes32 public constant SPONSOR_ROLE = keccak256("SPONSOR_ROLE");
@@ -69,28 +66,28 @@ contract SBFModule is AccessControl, Groth16Verifier {
                 proof._pC,
                 proof._pubSignals
             ),
-        "Invalid proof"
+            "Invalid proof"
         );
         _;
     }
 
-    modifier validEventIds(uint256[38] memory _pubSignals) {
-        uint256[] memory eventIds = getValidEventIdFromPublicSignals(
-            _pubSignals
-        );
-        require(
-            keccak256(abi.encodePacked(eventIds)) ==
-                keccak256(abi.encodePacked(VALID_EVENT_IDS)),
-            "Invalid event ids"
-        );
-        _;
-    }
+    // modifier validEventIds(uint256[38] memory _pubSignals, uint256 _claimEventId) {
+    //     uint256[] memory eventId = getValidEventIdFromPublicSignals(
+    //         _pubSignals
+    //     );
+    //     require(
+    //         keccak256(abi.encodePacked(eventId)) ==
+    //             keccak256(abi.encodePacked(VALID_EVENT_IDS)),
+    //         "Invalid event ids"
+    //     );
+    //     _;
+    // }
 
     modifier validSigner(uint256[38] memory _pubSignals) {
         uint256[2] memory signer = getSignerFromPublicSignals(_pubSignals);
         require(
             signer[0] == ETHBERLIN_SIGNER[0] &&
-            signer[1] == ETHBERLIN_SIGNER[1],
+                signer[1] == ETHBERLIN_SIGNER[1],
             "Invalid signer"
         );
         _;
@@ -112,7 +109,7 @@ contract SBFModule is AccessControl, Groth16Verifier {
     // \____/\____/_/ /_/____/\__/_/   \__,_/\___/\__/\____/_/
 
     /**
-     * @notice 
+     * @notice
      *  Constructor for SBF safe module
      *
      * @param _tokenAddress address of token used for bounty payouts
@@ -120,14 +117,14 @@ contract SBFModule is AccessControl, Groth16Verifier {
      */
     constructor(address _tokenAddress) {
         // Make sure that token address is valid
-        if (!_isContract(_tokenAddress)) revert SBFErrors.ADDRESS_NOT_CONTRACT();
+        if (!_isContract(_tokenAddress))
+            revert SBFErrors.ADDRESS_NOT_CONTRACT();
 
         // create instance
         token = IERC20(_tokenAddress);
 
         // Grant deployer default admin role
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-
     }
 
     //      ______     __                        __   ______                 __  _
@@ -137,18 +134,22 @@ contract SBFModule is AccessControl, Groth16Verifier {
     //  /_____/_/|_|\__/\___/_/  /_/ /_/\__,_/_/  /_/    \__,_/_/ /_/\___/\__/_/\____/_/ /_/____/
 
     /**
-     * @notice 
+     * @notice
      *  Function that allows sponsors to deposit funds into the smart contract
      *
      * @param _bountyId id for specific bounty
      * @param _amount amount to send in
      *
      */
-    function depositBounty(string memory _bountyId, uint256 _amount) external onlyRole(SPONSOR_ROLE) {
+    function depositBounty(
+        uint256 _bountyId,
+        uint256 _amount
+    ) external onlyRole(SPONSOR_ROLE) {
         // Make sure that the bounty does not exist already
-        if (bountyInfoOf[_bountyId].amount != 0) revert SBFErrors.BOUNTY_ALREADY_EXISTS();
+        if (bountyInfoOf[_bountyId].amount != 0)
+            revert SBFErrors.BOUNTY_ALREADY_EXISTS();
 
-        // Fetch balance before 
+        // Fetch balance before
         uint256 balanceBefore = token.balanceOf(address(this));
 
         // Do the transaction into the safe
@@ -168,10 +169,7 @@ contract SBFModule is AccessControl, Groth16Verifier {
         );
 
         // Emit an event that the bounty has been deposited
-        emit SBFEvents.BountyDeposition(
-            _bountyId,
-            bountyInfoOf[_bountyId]
-        );
+        emit SBFEvents.BountyDeposition(_bountyId, bountyInfoOf[_bountyId]);
     }
 
     /**
@@ -181,28 +179,36 @@ contract SBFModule is AccessControl, Groth16Verifier {
      *
      */
     //function claimBounty(string memory _bountyId) external {
-    function claimBounty(SBFDataTypes.ProofArgs calldata proof) external
+    function claimBounty(
+        SBFDataTypes.ProofArgs calldata proof
+    )
+        external
         verifiedProof(proof)
-		validEventIds(proof._pubSignals)
-		validSigner(proof._pubSignals) {
+        // validEventIds(proof._pubSignals)
+        validSigner(proof._pubSignals)
+    {
+        // string bountyId = "ETHBerlin2021";
+
+        uint256 bountyId = getValidEventIdFromPublicSignals(proof._pubSignals)[
+            0
+        ];
 
         // Make sure that bounty exists
-        if (bountyInfoOf[_bountyId].amount == 0) revert SBFErrors.BOUNTY_DOES_NOT_EXIST();
+        if (bountyInfoOf[bountyId].amount == 0)
+            revert SBFErrors.BOUNTY_DOES_NOT_EXIST();
 
         // Make sure that the bounty is still unpayed
-        if (bountyInfoOf[_bountyId].bountyIs == SBFDataTypes.BountyIs.PAYED) revert SBFErrors.BOUNTY_ALREADY_PAYED_OUT();
+        if (bountyInfoOf[bountyId].bountyIs == SBFDataTypes.BountyIs.PAYED)
+            revert SBFErrors.BOUNTY_ALREADY_PAYED_OUT();
 
         // Pay out bounty
-        token.safeTransfer(msg.sender, bountyInfoOf[_bountyId].amount);
+        token.safeTransfer(msg.sender, bountyInfoOf[bountyId].amount);
 
         // Emit event that the bounty has been claimed
-        emit SBFEvents.BountyPayed(
-            msg.sender,
-            bountyInfoOf[_bountyId]
-        );
+        emit SBFEvents.BountyPayed(msg.sender, bountyInfoOf[bountyId]);
 
         // Set the bountyIs status to PAYED
-        bountyInfoOf[_bountyId].bountyIs = SBFDataTypes.BountyIs.PAYED;
+        bountyInfoOf[bountyId].bountyIs = SBFDataTypes.BountyIs.PAYED;
     }
 
     // Numbers of events is arbitary but for this example we are using 10 (including test eventID)
@@ -218,20 +224,19 @@ contract SBFModule is AccessControl, Groth16Verifier {
     }
 
     function getWaterMarkFromPublicSignals(
-		uint256[38] memory _pubSignals
-	) public pure returns (uint256) {
-		return _pubSignals[37];
-	}
+        uint256[38] memory _pubSignals
+    ) public pure returns (uint256) {
+        return _pubSignals[37];
+    }
 
-
-	function getSignerFromPublicSignals(
-		uint256[38] memory _pubSignals
-	) public pure returns (uint256[2] memory) {
-		uint256[2] memory signer;
-		signer[0] = _pubSignals[13];
-		signer[1] = _pubSignals[14];
-		return signer;
-	}
+    function getSignerFromPublicSignals(
+        uint256[38] memory _pubSignals
+    ) public pure returns (uint256[2] memory) {
+        uint256[2] memory signer;
+        signer[0] = _pubSignals[13];
+        signer[1] = _pubSignals[14];
+        return signer;
+    }
 
     /**
      * @notice
@@ -242,7 +247,9 @@ contract SBFModule is AccessControl, Groth16Verifier {
      * @return _isAddressContract returns true if token is a contract, otherwise returns false
      *
      */
-    function _isContract(address _address) internal view returns (bool _isAddressContract) {
+    function _isContract(
+        address _address
+    ) internal view returns (bool _isAddressContract) {
         uint256 size;
 
         assembly {
