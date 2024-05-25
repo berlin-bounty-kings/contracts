@@ -15,7 +15,7 @@ library SBFErrors {
     error BOUNTY_ALREADY_EXISTS();
 
     /// @dev throw error if hacker tries to claim a non existent bounty
-    error BOUNTY_DOES_NOT_EXIST();
+    error BOUNTY_DOES_NOT_EXIST(uint256 bountyId);
 
     /// @dev throw error if bounty is already payed out
     error BOUNTY_ALREADY_PAYED_OUT();

@@ -159,12 +159,9 @@ contract SafeBountyFund is AccessControl, Groth16Verifier {
             0
         ];
 
-        // emit event that we fetched bounty id and what it is
-        emit SBFEvents.BountyIdDerived(bountyId);
-
         // Make sure that bounty exists
         if (bountyInfoOf[bountyId].amount == 0)
-            revert SBFErrors.BOUNTY_DOES_NOT_EXIST();
+            revert SBFErrors.BOUNTY_DOES_NOT_EXIST(bountyId);
 
         // Make sure that the bounty is still unpayed
         if (bountyInfoOf[bountyId].bountyIs == SBFDataTypes.BountyIs.PAYED)

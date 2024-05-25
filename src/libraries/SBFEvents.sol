@@ -16,7 +16,4 @@ library SBFEvents {
 
     /// @dev event emitted when a bounty has been payed out
     event BountyPayed(address claimer, SBFDataTypes.Bounty bountyInfo);
-
-    /// @dev event emitted right after bounty id is derived
-    event BountyIdDerived(uint256 bountyId);
 }
