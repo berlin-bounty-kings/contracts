@@ -11,6 +11,7 @@ contract SBFTest is Test {
 
     address public deployer;
     address public sponsor;
+    address public winningHacker;
 
     SBFModule public sbf;
     MockToken public token;
@@ -20,14 +21,19 @@ contract SBFTest is Test {
 
         deployer = address(0x2);
         sponsor = address(0x3);
+        winningHacker = address(0x4);
 
         token = new MockToken("token", "MTK");
 
         token.mint(deployer, 5_000e6);
         token.mint(sponsor, 5_000e6);
 
-        vm.prank(deployer);
+        vm.startPrank(deployer);
         sbf = new SBFModule(address(token));
+
+        sbf.grantRole(keccak256("SPONSOR_ROLE"), sponsor);
+
+        vm.stopPrank();
     }
 
     function test_depositBounty() external {
@@ -36,6 +42,22 @@ contract SBFTest is Test {
         token.approve(address(sbf), 5_000e6);
 
         sbf.depositBounty("asdfkl", 5_000e6);
+
+        vm.stopPrank();
+    }
+
+    function test_claimBounty() external {
+        vm.startPrank(sponsor);
+
+        token.approve(address(sbf), 5_000e6);
+
+        sbf.depositBounty("asdfkl", 5_000e6);
+
+        vm.stopPrank();
+
+        vm.startPrank(winningHacker);
+
+        sbf.claimBounty("asdfkl");
 
         vm.stopPrank();
     }

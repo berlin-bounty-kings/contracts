@@ -8,7 +8,6 @@ import {SBFModule} from "src/SBFModule.sol";
 
 contract DeploySBF is Script {
     address token = vm.envAddress("TOKEN_ADDRESS");
-    address safeAddress = vm.envAddress("SAFE_ADDRESS");
     address sponsorAddress = vm.envAddress("SPONSOR_ADDRESS");
     uint256 deployerKey = vm.envUint("DEPLOYER_KEY");
 

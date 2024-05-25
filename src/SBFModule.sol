@@ -122,7 +122,7 @@ contract SBFModule is AccessControl {
         if (bountyInfoOf[_bountyId].bountyIs == SBFDataTypes.BountyIs.PAYED) revert SBFErrors.BOUNTY_ALREADY_PAYED_OUT();
 
         // Pay out bounty
-        token.safeTransferFrom(address(this), msg.sender, bountyInfoOf[_bountyId].amount);
+        token.safeTransfer(msg.sender, bountyInfoOf[_bountyId].amount);
 
         // Emit event that the bounty has been claimed
         emit SBFEvents.BountyPayed(
