@@ -70,15 +70,6 @@ contract SafeBountyFund is AccessControl, Groth16Verifier {
         _;
     }
 
-    // modifier validWaterMark(uint256[38] memory _pubSignals) {
-        // require(
-            // getWaterMarkFromPublicSignals(_pubSignals) ==
-                // uint256(uint160(msg.sender)),
-            // "Invalid watermark"
-        // );
-        // _;
-    // }
-
     //    ______                 __                  __
     //   / ____/___  ____  _____/ /________  _______/ /_____  _____
     //  / /   / __ \/ __ \/ ___/ __/ ___/ / / / ___/ __/ __ \/ ___/
@@ -203,14 +194,6 @@ contract SafeBountyFund is AccessControl, Groth16Verifier {
         }
         return eventIds;
     }
-
-    // function getWaterMarkFromPublicSignals(
-        // uint256[38] memory _pubSignals
-    // ) external pure returns (uint256) {
-        // return _pubSignals[37];
-    // }
-
-
 
     function getSignerFromPublicSignals(
         uint256[38] memory _pubSignals
