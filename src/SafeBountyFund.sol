@@ -45,31 +45,6 @@ contract SafeBountyFund is AccessControl, Groth16Verifier {
     /// @dev Sponsor role
     bytes32 public constant SPONSOR_ROLE = keccak256("SPONSOR_ROLE");
 
-    /// MODIFIERS
-
-    // modifier verifiedProof(SBFDataTypes.ProofArgs calldata proof) {
-        // require(
-            // this.verifyProof(
-                // proof._pA,
-                // proof._pB,
-                // proof._pC,
-                // proof._pubSignals
-            // ),
-            // "Invalid proof"
-        // );
-        // _;
-    // }
-
-    // modifier validSigner(uint256[38] memory _pubSignals) {
-        // uint256[2] memory signer = getSignerFromPublicSignals(_pubSignals);
-        // require(
-            // signer[0] == ETHBERLIN_SIGNER[0] &&
-                // signer[1] == ETHBERLIN_SIGNER[1],
-            // "Invalid signer"
-        // );
-        // _;
-    // }
-
     //    ______                 __                  __
     //   / ____/___  ____  _____/ /________  _______/ /_____  _____
     //  / /   / __ \/ __ \/ ___/ __/ ___/ / / / ___/ __/ __ \/ ___/
