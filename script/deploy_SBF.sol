@@ -52,7 +52,7 @@ contract DeploySBF is Script {
 
         // Social Technologies
         sbf.depositBounty(
-            213102656137810142630059403125621749984,
+            121043452447619713051528617529666807030,
             7_000e18
         );
 

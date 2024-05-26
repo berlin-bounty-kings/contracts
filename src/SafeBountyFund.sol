@@ -130,9 +130,7 @@ contract SafeBountyFund is AccessControl, Groth16Verifier {
         // validSigner(proof._pubSignals)
     {
         // derive bounty id
-        uint256 bountyId = getValidEventIdFromPublicSignals(proof._pubSignals)[
-            0
-        ];
+        uint256 bountyId = getValidEventIdFromPublicSignals(proof._pubSignals);
 
         // Make sure that proof is valid
         if (!this.verifyProof(
@@ -189,17 +187,9 @@ contract SafeBountyFund is AccessControl, Groth16Verifier {
      */
     function getValidEventIdFromPublicSignals(
         uint256[38] memory _pubSignals
-    ) public pure returns (uint256[] memory _eventIds) {
-        // Initialize an array to store event IDs, currently set to hold 1 event ID.
-        uint256[] memory eventIds = new uint256[](1);
-
-        // Loop to extract event IDs starting from index 15.
-        for (uint256 i = 0; i < 1; i++) {
-            // Assign the event ID from the public signals to the eventIds array.
-            eventIds[i] = _pubSignals[15 + i];
-        }
+    ) public pure returns (uint256 _eventIds) {
         // Assign the eventIds array to the return variable.
-        _eventIds = eventIds;
+        _eventIds = _pubSignals[15];
     }
 
     /**
