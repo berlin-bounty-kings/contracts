@@ -1,66 +1,69 @@
-## Foundry
+<div align="center">
+  <h1 align="center">SBF</h1>
+  <h3>Safe Bounty Fund</h3>
+  
+![logo](logo.png)
+</div>
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+💸 Safe Bounty Fund is a secure way of paying hackers after a hackathon. Before the event, sponsors and organizers can use our dApp to add bounties. They do this by depositing funds in the smart contract and linking it to a Zupass badge idea for this bounty track. After the hackathon, the holders of Zupass winner badges are allowed to claim the corresponding bounties.
 
-Foundry consists of:
+## Screenshots
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+| Landing Page                                  | Bounties dashboard                        |
+| --------------------------------------------- | ----------------------------------------- |
+| ![Landing Page](screenshots/landing-page.png) | ![Sponsor page](screenshots/bounties.png) |
 
-## Documentation
+| Hacker dashboard                        | Hacker dashboard                |
+| --------------------------------------- | ------------------------------- |
+| ![Hacker page](screenshots/hacker1.png) | ![???](screenshots/hacker2.png) |
 
-https://book.getfoundry.sh/
+## The problem SBF solves
 
-## Usage
+😎 SBF removes all the hassle from hackathon prize management for both sponsors and hackers using the magic of zero-knowledge proofs. Sponsors can effortlessly post bounties and deposit prize money, while hackers can instantly and securely claim their winnings. Say goodbye to chasing sponsors on Discord for months—our solution ensures an efficient, seamless experience for everyone involved.
 
-### Build
+## Challenges you ran into
 
-```shell
-$ forge build
-```
+🧑‍💻 We found working with the cool tech at [Zupass](https://zupass.org) fun, new and exciting. Our team closely collaborated to understand the zk proofs and how to apply them. We want to give a special thank you to Richard and the Zupass team for helping us with explanation, guidance on code examples and helping us set up a test dev environment with your tech, you guys are amazing.
 
-### Test
+## Technology used
 
-```shell
-$ forge test
-```
+⚙️ Built using [Zupass](https://zupass.org), [Scaffold-ETH 2](https://scaffoldeth.io/), Solidity, NextJS, Foundry, Wagmi, Viem, and Typescript.
 
-### Format
+## Hackathon tracks
 
-```shell
-$ forge fmt
-```
+### Meta Award
 
-### Gas Snapshots
+🖥️ We developed this open-source solution for hackathon bounty distribution based on our experiences as seasoned hackathon participants. This tool could have saved us significant time, money, and frustration in the past, which is why we were driven to create it.
 
-```shell
-$ forge snapshot
-```
+### Best User Experience
 
-### Anvil
+💅 Removing the hassle includes making the user experience smooth. We aimed to enhance the hackathon experience in all aspects, which is why we put effort into creating a sleek and easy-to-use UX for both sponsors and hackers.
 
-```shell
-$ anvil
-```
+## Next steps
 
-### Deploy
+Due to the limited time, we could not complete everything we set out to do. Additional features that we plan to add include:
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
+- Cross-chain fund distribution
+- Distribute funds between team members (partial claims)
+- Keeping the funds and the smartcontract logic secured as a gnosis safe module
 
-### Cast
+## Links
 
-```shell
-$ cast <subcommand>
-```
+- [Vercel deployment](https://bounty-kings.vercel.app/)
+- [Presentation slides](https://docs.google.com/presentation/d/1Ve6jAdFijR18LzaWVAjBa3N_5VS2jSHFuacSU-f5MTE/edit?usp=sharing)
+- [Demo video](https://www.loom.com/share/a032dbc1beae416ab2dbd48c27d0710b?sid=b02ad7b2-c82e-49bd-8283-edc159672fa0)
+- [Github Smart contracts repo](https://github.com/berlin-bounty-kings/contracts)
+- [Github front-end repo](https://github.com/berlin-bounty-kings/frontend)
 
-### Help
+### Verified smart contracts
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+- [SafeBountyFund contract on Sepolia](https://sepolia.etherscan.io/address/0x8409b68ac606776c2bf28078529883542fcc4f96)
+
+## Team
+
+This project was build during ETHBERLIN04 by:
+
+- [0xjsi.eth](https://twitter.com/0xjsieth)
+- [aliX40](https://x.com/AliX__40)
+- [arjanjohan](https://x.com/arjanjohan/)
+- [Sebastian](https://www.linkedin.com/in/sebastian-s-a29b93276)
